@@ -91,19 +91,10 @@ The server will run on `http://localhost:5000` by default.
 
 #### Get Current User Profile
 - **Endpoint:** `GET /me`
-- **Description:** Retrieves the profile of the currently logged-in user.
-- **Note:** Currently uses a mocked authentication approach where the `userId` must be provided.
-- **Request Body (JSON) or Query Parameter:**
-  ```json
-  {
-    "userId": "<mongodb_user_id>"
-  }
-  ```
+- **Description:** Placeholder endpoint for retrieving the user profile. Currently under construction and will be fully implemented once JWT authentication is added.
 - **Response (200 OK):**
   ```json
   {
-    "_id": "<mongodb_user_id>",
-    "name": "John Doe",
-    "email": "john@example.com"
+    "message": "User profile endpoint - To be implemented with JWT"
   }
   ```

@@ -8,6 +8,9 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "Request body is missing" });
     }
     const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }
 
     const userExists = await User.findOne({ email });
 
@@ -32,7 +35,7 @@ exports.registerUser = async (req, res) => {
       res.status(400).json({ message: "Invalid user data" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error"});
   }
 };
 
@@ -44,7 +47,10 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Request body is missing" });
     }
     const { email, password } = req.body;
-    console.log(req.body)
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
     const user = await User.findOne({ email }).select("+password");
 
     if (user && (await user.matchPassword(password))) {
@@ -58,6 +64,6 @@ exports.loginUser = async (req, res) => {
       res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error"});
   }
 };
