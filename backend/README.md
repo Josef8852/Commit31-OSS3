@@ -132,9 +132,9 @@ The server runs on `http://localhost:5000` by default.
 
 1. **Register** or **Login** to receive a JWT token.
 2. Include the token in the `Authorization` header for protected routes:
-   ```
-   Authorization: Bearer <your_token>
-   ```
+   ```text
+    Authorization: Bearer <your_token>
+    ```
 3. The `protect` middleware verifies the token and grants access to the route.
 
 ---

@@ -20,6 +20,7 @@ const protect = async (req, res, next) => {
       }
 
       next();
+      return;
     } catch (error) {
       return res.status(401).json({ message: "Not authorized, token failed" });
     }
