@@ -1,19 +1,21 @@
 # Backend API Documentation
 
-This directory contains the backend codebase for the application, built with Node.js, Express, and MongoDB.
+This directory contains the backend codebase for the application, built with **Node.js**, **Express**, and **MongoDB**.
 
-## Folder Structure
+---
 
-The backend follows a standard MVC (Model-View-Controller) architecture:
+# Folder Structure
 
-```text
+The backend follows a standard **MVC (Model–View–Controller)** architecture.
+
+```
 backend/
 ├── config/           # Configuration files (e.g., database connection)
 │   └── db.js         # MongoDB connection setup
 ├── controllers/      # Route handlers implementing the core logic
 │   ├── authController.js # Handles registration and login logic
-│   └── userController.js # Handles user-related operations (e.g., fetching profile)
-├── middlewares/      # Custom Express middlewares (e.g., authentication, error handling)
+│   └── userController.js # Handles user-related operations
+├── middlewares/      # Custom Express middlewares
 ├── models/           # Mongoose schemas representing database collections
 │   └── userModel.js  # User schema definition
 ├── routes/           # API route definitions mapping URLs to controllers
@@ -23,78 +25,291 @@ backend/
 └── server.js         # Application entry point and server configuration
 ```
 
-## Getting Started
+---
 
-### Prerequisites
-- Node.js installed
-- MongoDB running locally or a MongoDB Atlas URI
+# Getting Started
 
-### Installation
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables:
-   - Create a `.env` file (optional) and configure variables like `PORT` or `MONGO_URI`. By default, it connects to `mongodb://127.0.0.1:27017/uni_find`.
+## Prerequisites
 
-### Running the Server
-Run the server in development mode (using nodemon):
-```bash
+Make sure the following tools are installed:
+
+* Node.js
+* MongoDB (local instance or MongoDB Atlas)
+
+---
+
+## Installation
+
+Navigate to the backend directory:
+
+```
+cd backend
+```
+
+Install dependencies:
+
+```
+npm install
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the backend directory.
+
+Example:
+
+```
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/uni_find
+CORS_ORIGIN=http://localhost:3000
+```
+
+| Variable    | Description                                |
+| ----------- | ------------------------------------------ |
+| PORT        | Port where the backend server runs         |
+| MONGO_URI   | MongoDB database connection string         |
+| CORS_ORIGIN | Allowed frontend origins for CORS requests |
+
+Multiple origins can be specified using commas:
+
+```
+CORS_ORIGIN=http://localhost:3000,http://127.0.0.1:3000
+```
+
+---
+
+# Running the Server
+
+Start the server in development mode:
+
+```
 npm run dev
 ```
-Or start normally:
-```bash
+
+Or run normally:
+
+```
 npm start
 ```
-The server will run on `http://localhost:5000` by default.
+
+The backend will start at:
+
+```
+http://localhost:5000
+```
 
 ---
 
-## API Routes
+# API Routes
 
-### 1. Authentication Routes
-**Base URL:** `/api/auth`
+## 1. Authentication Routes
 
-#### Register User
-- **Endpoint:** `POST /register`
-- **Description:** Registers a new user.
-- **Request Body (JSON):**
-  ```json
-  {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "securepassword123"
-  }
-  ```
-- **Response (201 Created):** Returns user details and registration message.
+Base URL:
 
-#### Login User
-- **Endpoint:** `POST /login`
-- **Description:** Logs in an existing user.
-- **Request Body (JSON):**
-  ```json
-  {
-    "email": "john@example.com",
-    "password": "securepassword123"
-  }
-  ```
-- **Response (200 OK):** Returns user details and login success message.
+```
+/api/auth
+```
+
+### Register User
+
+**Endpoint**
+
+```
+POST /api/auth/register
+```
+
+**Description**
+
+Registers a new user in the system.
+
+**Request Body**
+
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response**
+
+```
+201 Created
+```
+
+Returns the newly created user and a success message.
 
 ---
 
-### 2. User Routes
-**Base URL:** `/api/users`
+### Login User
 
-#### Get Current User Profile
-- **Endpoint:** `GET /me`
-- **Description:** Placeholder endpoint for retrieving the user profile. Currently under construction and will be fully implemented once JWT authentication is added.
-- **Response (200 OK):**
-  ```json
-  {
-    "message": "User profile endpoint - To be implemented with JWT"
+**Endpoint**
+
+```
+POST /api/auth/login
+```
+
+**Description**
+
+Authenticates a user using email and password.
+
+**Request Body**
+
+```json
+{
+  "email": "john@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response**
+
+```
+200 OK
+```
+
+Returns user information and login confirmation.
+
+---
+
+## 2. User Routes
+
+Base URL:
+
+```
+/api/users
+```
+
+### Get Current User Profile
+
+**Endpoint**
+
+```
+GET /api/users/me
+```
+
+**Description**
+
+Placeholder endpoint for retrieving the authenticated user's profile.
+
+**Response**
+
+```json
+{
+  "message": "User profile endpoint - To be implemented with JWT"
+}
+```
+
+---
+
+# Security Middleware
+
+The backend includes several security-related middleware to protect the application from common web vulnerabilities.
+
+---
+
+## Helmet
+
+Helmet is used to secure HTTP response headers.
+
+Helmet helps protect the application from attacks such as:
+
+* Clickjacking
+* MIME-type sniffing
+* Some Cross-Site Scripting (XSS) attacks
+
+Helmet is applied globally in `server.js`.
+
+Example:
+
+```
+app.use(helmet());
+```
+
+This ensures every response from the server includes secure HTTP headers.
+
+---
+
+## CORS (Cross-Origin Resource Sharing)
+
+CORS controls which external domains can access the API.
+
+Instead of allowing all origins, the backend allows only specific origins defined in the environment configuration.
+
+Example configuration in `server.js`:
+
+```
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",")
+  : ["http://localhost:3000"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true
+  })
+);
+```
+
+This prevents unauthorized domains from accessing the API.
+
+---
+
+## Rate Limiting
+
+The login endpoint is protected using rate limiting to prevent brute-force attacks.
+
+Rate limiting restricts how many requests a user can send within a certain time period.
+
+Applied to:
+
+```
+POST /api/auth/login
+```
+
+Example configuration:
+
+```
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    error: "Too many login attempts. Please try again later."
   }
-  ```
+});
+```
+
+This configuration allows:
+
+* Maximum **5 login attempts**
+* Within **15 minutes**
+* Per **IP address**
+
+If the limit is exceeded, the API returns:
+
+```json
+{
+  "error": "Too many login attempts. Please try again later."
+}
+```
+
+with status code:
+
+```
+429 Too Many Requests
+```
+
+---
+
+# Summary
+
+The backend now includes the following security improvements:
+
+* Secure HTTP headers using Helmet
+* Controlled cross-origin access using CORS
+* Protection against brute-force login attempts using rate limiting
+
+These security measures help make the backend safer for real-world use and provide a reusable pattern for securing future API endpoints.
