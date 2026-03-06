@@ -1,4 +1,10 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+const rawBaseUrl = import.meta.env.VITE_API_URL;
+
+if (!rawBaseUrl) {
+  throw new Error("Missing VITE_API_URL");
+}
+
+const BASE_URL = rawBaseUrl.replace(/\/+$/, "");
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem("token");
@@ -15,11 +21,20 @@ async function request(endpoint, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+const normalizedEndpoint = endpoint.startsWith("/")
+  ? endpoint
+  : `/${endpoint}`;
+
+let response;
+
+try {
+  response = await fetch(`${BASE_URL}${normalizedEndpoint}`, {
     ...options,
     headers,
   });
-
+} catch (err) {
+  throw new Error(err.message || "Network request failed");
+}
   let data = null;
 
   try {
