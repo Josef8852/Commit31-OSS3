@@ -35,13 +35,18 @@ export const AuthProvider = ({ children }) => {
 
   // Helper for API calls
   const authFetch = async (url, options = {}) => {
-    const headers = {
-      "Content-Type": "application/json",
-      ...options.headers,
-    };
+    const headers = new Headers(options.headers || {});
+
+    const hasBody = options.body != null;
+    const isFormData =
+      typeof FormData !== "undefined" && options.body instanceof FormData;
+
+    if (hasBody && !isFormData && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
 
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+      headers.set("Authorization", `Bearer ${token}`);
     }
 
     return fetch(url, {
@@ -67,5 +72,11 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+
+  return context;
 };
