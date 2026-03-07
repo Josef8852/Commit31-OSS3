@@ -41,6 +41,7 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const claimRoutes = require("./routes/claim");
 const itemRoutes = require("./routes/item");
+const messageRoutes = require("./routes/message");
 
 app.get("/", (req, res) => {
   res.send("Backend running successfully 🚀");
@@ -50,6 +51,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", claimRoutes);
 app.use("/api/items", itemRoutes);
+app.use("/api/messages", messageRoutes);
 
 /* ---------------- SERVER START ---------------- */
 
