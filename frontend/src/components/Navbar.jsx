@@ -63,7 +63,7 @@ export default function Navbar() {
             >
               Lost Item
             </a>
-            <a
+             <a
               href="#report"
               className="text-sm font-black uppercase text-black border-2 border-black px-4 py-2 bg-green-400 hover:bg-black hover:text-green-400 transition-colors shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
               style={{ fontFamily: "'Space Mono', monospace" }}
@@ -148,7 +148,7 @@ export default function Navbar() {
                 className="text-sm font-black uppercase text-black border-b-2 border-black px-6 py-4 bg-yellow-100"
                 style={{ fontFamily: "'Space Mono', monospace" }}
               >
-                👋 {user?.name || user?.email}
+                👋 {user?.email}
               </span>
               <button
                 onClick={() => { handleLogout(); setMenuOpen(false); }}
