@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaEdit, FaSave, FaTimes, FaShieldAlt } from "react-icons/fa";
 import api from "../api/client";
 import useAuth from "../context/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const { updateUser } = useAuth();
+  const { updateUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Profile data
   const [profile, setProfile] = useState(null);
@@ -42,7 +44,12 @@ export default function Profile() {
         setName(data.name || "");
         setContactNumber(data.contactNumber || "");
       } catch (err) {
-        setFetchError(err.message || "Failed to load profile");
+        const message = err.message || "Failed to load profile";
+        setFetchError(message);
+        if (/unauthorized|not authorized|token|expired/i.test(message)) {
+          logout();
+          navigate("/login");
+        }
       } finally {
         setLoading(false);
       }
