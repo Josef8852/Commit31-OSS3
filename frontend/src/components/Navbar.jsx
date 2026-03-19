@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaComments } from "react-icons/fa";
+import { FaUserCircle, FaComments, FaUsers } from "react-icons/fa";
 import useAuth from "../context/useAuth";
 import { useSocket } from "../context/SocketContext";
 import api from "../api/client";
@@ -120,6 +120,13 @@ export default function Navbar() {
                 )}
               </Link>
               <Link
+                to="/users"
+                className="flex items-center justify-center w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-yellow-300 text-black transition-colors shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
+                title="Users"
+              >
+                <FaUsers size={20} />
+              </Link>
+              <Link
                 to="/profile"
                 className="flex items-center justify-center w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-yellow-300 text-black transition-colors shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
                 title="Profile"
@@ -202,6 +209,14 @@ export default function Navbar() {
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
+              </Link>
+              <Link
+                to="/users"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-black uppercase text-black border-b-2 border-black px-6 py-4 bg-white hover:bg-black hover:text-yellow-300 transition-colors flex items-center gap-2"
+                style={{ fontFamily: "'Space Mono', monospace" }}
+              >
+                <FaUsers size={18} /> Users
               </Link>
               <Link
                 to="/profile"

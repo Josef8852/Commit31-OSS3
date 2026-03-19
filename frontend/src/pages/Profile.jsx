@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaEdit, FaSave, FaTimes, FaShieldAlt } from "react-icons/fa";
+import toast from "react-hot-toast";
 import api from "../api/client";
 import useAuth from "../context/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -94,9 +95,12 @@ export default function Profile() {
       setProfile(data);
       updateUser({ name: data.name, contactNumber: data.contactNumber });
       setInfoMsg({ type: "success", text: "Profile updated successfully!" });
+      toast.success("Profile updated!");
       setEditingSection(null);
     } catch (err) {
-      setInfoMsg({ type: "error", text: err.message || "Update failed" });
+      const msg = err.message || "Update failed";
+      setInfoMsg({ type: "error", text: msg });
+      toast.error(msg);
     } finally {
       setInfoLoading(false);
     }
@@ -115,11 +119,14 @@ export default function Profile() {
       setProfile(data);
       updateUser({ email: data.email });
       setEmailMsg({ type: "success", text: "Email updated successfully!" });
+      toast.success("Email updated!");
       setNewEmail("");
       setEmailPassword("");
       setEditingSection(null);
     } catch (err) {
-      setEmailMsg({ type: "error", text: err.message || "Email update failed" });
+      const msg = err.message || "Email update failed";
+      setEmailMsg({ type: "error", text: msg });
+      toast.error(msg);
     } finally {
       setEmailLoading(false);
     }
@@ -139,12 +146,15 @@ export default function Profile() {
     try {
       await api.patch("/api/users/password", { currentPassword, newPassword });
       setPasswordMsg({ type: "success", text: "Password changed successfully!" });
+      toast.success("Password changed!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setEditingSection(null);
     } catch (err) {
-      setPasswordMsg({ type: "error", text: err.message || "Password change failed" });
+      const msg = err.message || "Password change failed";
+      setPasswordMsg({ type: "error", text: msg });
+      toast.error(msg);
     } finally {
       setPasswordLoading(false);
     }

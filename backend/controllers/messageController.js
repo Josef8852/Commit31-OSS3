@@ -47,7 +47,7 @@ exports.sendMessage = async (req, res) => {
     // Emit real-time event to receiver
     const io = req.app.get("io");
     if (io) {
-      const { notifyUser } = require("./utils/socket");
+      const { notifyUser } = require("../utils/socket");
       notifyUser(io, receiver, "new_message", populated);
     }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {  useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import  useAuth  from "../context/useAuth";
 import api from "../api/client";
 
@@ -34,6 +35,7 @@ function Register() {
       if (result.token) {
         const user = { _id: result._id, email: result.email, role: result.role };
         login(user, result.token);
+        toast.success("Account created successfully!");
         navigate("/"); 
       } else {
         navigate("/login", {
@@ -41,7 +43,9 @@ function Register() {
         });
       }
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      const msg = err.message || "Something went wrong. Please try again.";
+      setError(msg);
+      toast.error(msg);
     }
     finally {
       setisLoading(false);

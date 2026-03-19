@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
+import Users from "./pages/Users";
+import UserProfile from "./pages/UserProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 
@@ -23,6 +25,12 @@ export default function App() {
             </ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute>
               <Messages />
+            </ProtectedRoute>} />
+            <Route path="/users" element={<ProtectedRoute>
+              <Users />
+            </ProtectedRoute>} />
+            <Route path="/users/:id" element={<ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute>
               <Dashboard/>

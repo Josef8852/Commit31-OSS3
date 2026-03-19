@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FaArrowLeft, FaPaperPlane, FaComments, FaCircle } from "react-icons/fa";
+import toast from "react-hot-toast";
 import api from "../api/client";
 import useAuth from "../context/useAuth";
 import { useSocket } from "../context/SocketContext";
@@ -7,6 +9,7 @@ import { useSocket } from "../context/SocketContext";
 export default function Messages() {
   const { user } = useAuth();
   const socket = useSocket();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Conversations
   const [conversations, setConversations] = useState([]);
@@ -45,6 +48,25 @@ export default function Messages() {
     fetchConversations();
   }, []);
 
+  // ─── Handle query params (from UserProfile "Message" button) ───
+  useEffect(() => {
+    const userId = searchParams.get("user");
+    const userName = searchParams.get("name");
+    const userEmail = searchParams.get("email");
+
+    if (userId && userName) {
+      setActiveChat({
+        _id: userId,
+        name: decodeURIComponent(userName),
+        email: userEmail ? decodeURIComponent(userEmail) : "",
+      });
+      setShowChat(true);
+      setInput("");
+      // Clear query params
+      setSearchParams({}, { replace: true });
+    }
+  }, []); // Run once on mount
+
   // ─── Fetch messages when active chat changes ───
   useEffect(() => {
     if (!activeChat) return;
@@ -73,6 +95,17 @@ export default function Messages() {
           } catch {
             // silent
           }
+        }
+
+        // Update conversation list to clear unread indicator
+        if (unread.length > 0) {
+          setConversations((prev) =>
+            prev.map((c) =>
+              (c._id?._id || c._id) === activeChat._id
+                ? { ...c, lastMessage: { ...c.lastMessage, read: true } }
+                : c
+            )
+          );
         }
       } catch (err) {
         console.error("Failed to fetch messages:", err);
@@ -160,6 +193,7 @@ export default function Messages() {
       setMessages((prev) => [...prev, data]);
       setInput("");
       inputRef.current?.focus();
+      toast.success("Message sent");
 
       // Update conversation list
       setConversations((prev) => {
@@ -177,6 +211,7 @@ export default function Messages() {
       });
     } catch (err) {
       console.error("Failed to send message:", err);
+      toast.error(err.message || "Failed to send message");
     } finally {
       setSending(false);
     }
