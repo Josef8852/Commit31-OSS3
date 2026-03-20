@@ -9,6 +9,8 @@ const validateRequest = require("../middlewares/validateRequest");
 // Import Controllers
 const {
   getUserProfile,
+  getAllUsers,
+  getPublicProfile,
   updateProfile,
   updateEmail,
   changePassword,
@@ -77,5 +79,19 @@ router.patch(
   validateRequest,
   changePassword
 );
+
+/**
+ * @route   GET /api/users
+ * @desc    List all users (search supported via ?search=query)
+ * @access  Private
+ */
+router.get("/", protect, getAllUsers);
+
+/**
+ * @route   GET /api/users/:id
+ * @desc    Get public profile of a user
+ * @access  Private
+ */
+router.get("/:id", protect, getPublicProfile);
 
 module.exports = router;

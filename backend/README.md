@@ -1,6 +1,6 @@
 # Backend API Documentation: Commit31 Lost and Found
 
-This directory contains the backend codebase for the **Commit31 Lost and Found** platform, built with **Node.js**, **Express**, and **MongoDB**. It features a robust MVC architecture, JWT-based authentication, and integrated security middleware.
+This directory contains the backend codebase for the **Commit31 Lost and Found** platform, built with **Node.js**, **Express**, **MongoDB**, and **Socket.IO**. It features a robust MVC architecture, JWT-based authentication, real-time messaging via WebSockets, and integrated security middleware.
 
 ---
 
@@ -30,7 +30,8 @@ backend/
 │   ├── claim.js               # Claim routes (/api/claims)
 │   └── message.js             # Message routes (/api/messages)
 ├── utils/
-│   └── generateToken.js       # JWT token generation utility
+│   ├── generateToken.js       # JWT token generation utility
+│   └── socket.js              # Socket.IO user tracking & notification helpers
 ├── validators/
 │   ├── authValidator.js       # Auth input validation
 │   ├── userValidator.js       # User input validation
@@ -134,9 +135,25 @@ The backend will start at: `http://localhost:5000`
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/me` | Get current user's profile |
+| `GET` | `/` | List all users (excludes current user, supports `?search=`) |
+| `GET` | `/:id` | Get public profile of a specific user |
 | `PATCH` | `/profile` | Update name and/or contactNumber |
 | `PATCH` | `/email` | Update email (requires current password) |
 | `PATCH` | `/password` | Change password (requires current password) |
+
+**List Users Query:** `GET /api/users?search=alice` — searches by name or email (case-insensitive, max 50 results).
+
+**Public Profile Response:**
+```json
+{
+  "_id": "...",
+  "name": "Alice",
+  "email": "alice@example.com",
+  "role": "student",
+  "contactNumber": "9876543210",
+  "createdAt": "2026-01-15T10:30:00.000Z"
+}
+```
 
 **Update Profile:**
 ```json
@@ -218,6 +235,43 @@ The backend will start at: `http://localhost:5000`
 - Invalid IDs return `400` with a clear error
 
 > 🔒 = Requires `Authorization: Bearer <token>` header
+
+---
+
+## 🔌 Real-Time (Socket.IO)
+
+The backend uses **Socket.IO** for real-time communication, integrated alongside Express on the same HTTP server.
+
+### Connection
+
+Clients connect to the server's root namespace with their JWT:
+
+```js
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000", {
+  auth: { token: "<your_jwt>" },
+});
+```
+
+### Authentication
+
+Socket connections are authenticated via middleware that verifies the JWT from `socket.handshake.auth.token`. Unauthorized connections are rejected.
+
+### Events
+
+| Event | Direction | Payload | Description |
+|---|---|---|---|
+| `new_message` | Server → Client | Full populated message object | Emitted to the receiver when a new message is sent |
+
+### User Tracking
+
+The `utils/socket.js` module tracks connected users in memory using a `Map<userId, Set<socketId>>`, supporting multiple connections per user. Helper functions:
+
+- `addUser(userId, socketId)` — Track a new connection
+- `removeUser(socketId)` — Remove on disconnect
+- `getSockets(userId)` — Get all socket IDs for a user
+- `notifyUser(io, userId, event, data)` — Emit an event to all of a user's sockets
 
 ---
 
