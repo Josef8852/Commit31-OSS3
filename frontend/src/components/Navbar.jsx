@@ -36,11 +36,16 @@ export default function Navbar() {
     fetchUnread();
   }, [isAuthenticated]);
 
-  // Listen for new messages to increment badge
+  // Listen for new messages — re-fetch authoritative unread count
   useEffect(() => {
     if (!socket) return;
-    const handleNewMessage = () => {
-      setUnreadCount((prev) => prev + 1);
+    const handleNewMessage = async () => {
+      try {
+        const data = await api.get("/api/messages/unread/count");
+        setUnreadCount(data.unreadCount || 0);
+      } catch {
+        // silent
+      }
     };
     socket.on("new_message", handleNewMessage);
     return () => socket.off("new_message", handleNewMessage);
@@ -108,6 +113,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 to="/messages"
+                aria-label="Messages"
                 className="relative flex items-center justify-center w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-yellow-300 text-black transition-colors shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
                 title="Messages"
                 onClick={() => setUnreadCount(0)}
@@ -121,6 +127,7 @@ export default function Navbar() {
               </Link>
               <Link
                 to="/users"
+                aria-label="Users"
                 className="flex items-center justify-center w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-yellow-300 text-black transition-colors shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
                 title="Users"
               >
@@ -128,6 +135,7 @@ export default function Navbar() {
               </Link>
               <Link
                 to="/profile"
+                aria-label="Profile"
                 className="flex items-center justify-center w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-yellow-300 text-black transition-colors shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
                 title="Profile"
               >

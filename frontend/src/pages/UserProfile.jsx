@@ -155,14 +155,19 @@ export default function UserProfile() {
 
         {/* Message Button (only show for other users) */}
         {!isOwnProfile && (
-          <button
-            onClick={handleMessage}
-            className="w-full border-4 border-black p-4 bg-green-400 font-black uppercase text-lg flex items-center justify-center gap-3 hover:bg-black hover:text-green-400 transition-all shadow-[6px_6px_0px_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] cursor-pointer"
-            style={fontStyle}
-          >
-            <FaComments size={22} />
-            Send Message
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={handleMessage}
+              className="w-full border-4 border-black p-4 bg-green-400 font-black uppercase text-lg flex items-center justify-center gap-3 hover:bg-black hover:text-green-400 transition-all shadow-[6px_6px_0px_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] cursor-pointer"
+              style={fontStyle}
+            >
+              <FaComments size={22} />
+              Send Message
+            </button>
+            <p className="text-[10px] font-bold text-center opacity-40" style={fontStyle}>
+              New conversations require a linked lost/found item
+            </p>
+          </div>
         )}
       </div>
     </div>

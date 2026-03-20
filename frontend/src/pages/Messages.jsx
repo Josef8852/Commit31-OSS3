@@ -456,12 +456,21 @@ export default function Messages() {
             {/* Input area */}
             <div className="border-t-4 border-black bg-white p-3">
               {!activeItemId ? (
-                <p
-                  className="text-xs font-bold text-center opacity-50 py-2"
-                  style={fontStyle}
-                >
-                  Cannot reply — no item context found in this conversation
-                </p>
+                <div className="text-center py-3 space-y-2">
+                  <p
+                    className="text-xs font-black uppercase opacity-60"
+                    style={fontStyle}
+                  >
+                    No item context — messages must be linked to a lost or found item
+                  </p>
+                  <a
+                    href="#report"
+                    className="inline-block text-xs font-black uppercase border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-black hover:text-yellow-300 transition-colors shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                    style={fontStyle}
+                  >
+                    Report a Lost or Found Item →
+                  </a>
+                </div>
               ) : (
                 <form onSubmit={handleSend} className="flex gap-2">
                   <input

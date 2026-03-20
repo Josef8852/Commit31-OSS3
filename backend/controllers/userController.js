@@ -25,20 +25,21 @@ exports.getUserProfile = async (req, res) => {
 // GET /api/users?search=query
 exports.getAllUsers = async (req, res) => {
   try {
-    const search = req.query.search || "";
+    const search =
+      typeof req.query.search === "string" ? req.query.search.trim() : "";
     const filter = {
       _id: { $ne: req.user._id },
     };
-
     if (search) {
+      const safeSearch = escapeRegex(search);
       filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
+        { name: { $regex: safeSearch, $options: "i" } },
+        { email: { $regex: safeSearch, $options: "i" } },
       ];
     }
 
     const users = await User.find(filter)
-      .select("name email role contactNumber createdAt")
+      .select("name email role createdAt")
       .sort({ name: 1 })
       .limit(50);
 
@@ -53,7 +54,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getPublicProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select(
-      "name email role contactNumber createdAt"
+      "name email role contactNumber createdAt",
     );
 
     if (!user) {
@@ -114,7 +115,10 @@ exports.updateEmail = async (req, res) => {
       return res.status(401).json({ message: "Current password is incorrect" });
     }
 
-    const emailTaken = await User.findOne({ email: newEmail, _id: { $ne: user._id } });
+    const emailTaken = await User.findOne({
+      email: newEmail,
+      _id: { $ne: user._id },
+    });
     if (emailTaken) {
       return res.status(400).json({ message: "Email is already in use" });
     }

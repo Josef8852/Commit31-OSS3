@@ -6,6 +6,7 @@ import api from "../api/client";
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -21,6 +22,7 @@ export default function Users() {
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
+      setError("");
       try {
         const query = debouncedSearch
           ? `?search=${encodeURIComponent(debouncedSearch)}`
@@ -29,6 +31,8 @@ export default function Users() {
         setUsers(data);
       } catch (err) {
         console.error("Failed to fetch users:", err);
+        setError(err.message || "Failed to load users");
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -83,6 +87,19 @@ export default function Users() {
             >
               Loading users...
             </p>
+          </div>
+        ) : error ? (
+          <div className="border-4 border-black p-8 bg-red-500 text-white shadow-[4px_4px_0px_#000] text-center">
+            <p className="text-sm font-black uppercase" style={fontStyle}>
+              {error}
+            </p>
+            <button
+              onClick={() => setDebouncedSearch(debouncedSearch)}
+              className="mt-3 text-xs font-black uppercase border-2 border-white px-4 py-2 hover:bg-white hover:text-red-500 transition-colors cursor-pointer"
+              style={fontStyle}
+            >
+              Retry
+            </button>
           </div>
         ) : users.length === 0 ? (
           <div className="border-4 border-black p-8 bg-white shadow-[4px_4px_0px_#000] text-center">
